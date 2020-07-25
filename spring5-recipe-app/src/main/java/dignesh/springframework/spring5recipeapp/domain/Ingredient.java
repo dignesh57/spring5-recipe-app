@@ -1,12 +1,12 @@
 package dignesh.springframework.spring5recipeapp.domain;
 
-import javax.persistence.CascadeType;
+import java.math.BigDecimal;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
@@ -18,13 +18,32 @@ public class Ingredient {
 	private Long id;
 	
 	private String description;
-	private String amount;
+	private BigDecimal amount;
 	
 	@OneToOne(fetch=FetchType.EAGER)
 	private UnitOfMeasure uom;
 	
 	@ManyToOne
 	private Recipe recipe;
+
+	public Ingredient() {
+		
+	}
+	
+	public Ingredient(String description, BigDecimal amount, UnitOfMeasure uom) {
+		
+		this.description = description;
+		this.amount = amount;
+		this.uom = uom;
+	}
+	
+	public Ingredient(String description, BigDecimal amount, UnitOfMeasure uom,Recipe recipe) {
+		
+		this.description = description;
+		this.amount = amount;
+		this.uom = uom;
+		this.recipe=recipe;
+	}
 
 	public Long getId() {
 		return id;
@@ -42,11 +61,11 @@ public class Ingredient {
 		this.description = description;
 	}
 
-	public String getAmount() {
+	public BigDecimal getAmount() {
 		return amount;
 	}
 
-	public void setAmount(String amount) {
+	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
 	}
 
