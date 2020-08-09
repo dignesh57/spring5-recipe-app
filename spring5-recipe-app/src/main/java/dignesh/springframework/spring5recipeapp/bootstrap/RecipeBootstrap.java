@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import dignesh.springframework.spring5recipeapp.domain.Category;
 import dignesh.springframework.spring5recipeapp.domain.Difficulty;
@@ -18,7 +19,9 @@ import dignesh.springframework.spring5recipeapp.domain.UnitOfMeasure;
 import dignesh.springframework.spring5recipeapp.repositories.CategoryRepository;
 import dignesh.springframework.spring5recipeapp.repositories.RecipeRepository;
 import dignesh.springframework.spring5recipeapp.repositories.UnitOfMeasureRepository;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEvent>{
 
@@ -137,9 +140,11 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
 	}
 
 	@Override
+	@Transactional
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		// TODO Auto-generated method stub
 		recipeRepository.saveAll(getRecipes());
+		log.debug("Loading bootstrap data");
 	}
 	
 }
