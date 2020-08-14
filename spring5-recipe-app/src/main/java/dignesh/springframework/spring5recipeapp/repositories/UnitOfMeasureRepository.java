@@ -3,6 +3,7 @@ package dignesh.springframework.spring5recipeapp.repositories;
 import java.util.Optional;
 
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 import dignesh.springframework.spring5recipeapp.domain.UnitOfMeasure;
 
