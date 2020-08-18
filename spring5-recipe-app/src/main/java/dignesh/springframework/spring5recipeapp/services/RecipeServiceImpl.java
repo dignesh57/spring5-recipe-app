@@ -1,10 +1,15 @@
 package dignesh.springframework.spring5recipeapp.services;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import dignesh.springframework.spring5recipeapp.commands.RecipeCommand;
+import dignesh.springframework.spring5recipeapp.converters.RecipeCommandToRecipe;
+import dignesh.springframework.spring5recipeapp.converters.RecipeToRecipeCommand;
 import dignesh.springframework.spring5recipeapp.domain.Recipe;
 import dignesh.springframework.spring5recipeapp.repositories.RecipeRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -14,9 +19,13 @@ import lombok.extern.slf4j.Slf4j;
 public class RecipeServiceImpl implements RecipeService {
 	
 	private final RecipeRepository recipeRepository;
+	private final RecipeCommandToRecipe recipeCommandToRecipe;
+	private final RecipeToRecipeCommand recipeToRecipeCommand;
 	
-	public RecipeServiceImpl(RecipeRepository recipeRepository) {
+	public RecipeServiceImpl(RecipeRepository recipeRepository,RecipeCommandToRecipe recipeCommandToRecipe,RecipeToRecipeCommand recipeToRecipeCommand) {
 		this.recipeRepository = recipeRepository;
+		this.recipeCommandToRecipe=recipeCommandToRecipe;
+		this.recipeToRecipeCommand=recipeToRecipeCommand;
 	}
 
 
@@ -27,6 +36,45 @@ public class RecipeServiceImpl implements RecipeService {
 		Set<Recipe> recipes=new HashSet<Recipe>();
 		recipeRepository.findAll().iterator().forEachRemaining(recipes::add);
 		return recipes;
+	}
+
+
+	@Override
+	public Recipe findById(Long l) {
+		Optional<Recipe> recipeOptional = recipeRepository.findById(l);
+
+        if (!recipeOptional.isPresent()) {
+            throw new RuntimeException("Recipe Not Found!");
+        }
+
+        return recipeOptional.get();
+        
+	}
+
+
+	@Override
+	@Transactional
+	public RecipeCommand saveRecipeCommand(RecipeCommand command) {
+		
+		Recipe detachedRecipe=recipeCommandToRecipe.convert(command);
+		
+		Recipe savedRecipe=recipeRepository.save(detachedRecipe);
+		log.debug("Saved Recipe ID : "+savedRecipe.getId());
+		return recipeToRecipeCommand.convert(savedRecipe);
+	}
+
+
+	@Override
+	public RecipeCommand findCommandById(Long id) {
+		
+		return recipeToRecipeCommand.convert(findById(id));
+		
+	}
+
+	@Override
+	public void deleteById(Long idToDelete) {
+		recipeRepository.deleteById(idToDelete);
+		
 	}
 
 }
